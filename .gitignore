@@ -12,3 +12,5 @@ playwright-report
 test-results
 .idea/
 .vscode/
+tsconfig.tsbuildinfo
+*.tsbuildinfo
