@@ -121,6 +121,8 @@ nhanga/
 
 - [ ] **Step 2: Create `tsconfig.json`**
 
+Note: Next 16 will rewrite `"jsx": "preserve"` to `"jsx": "react-jsx"` and append `.next/types/**/*.ts` + `.next/dev/types/**/*.ts` to `include` on the first build. That is mandatory under Next 16 and is acceptable — commit the post-build version.
+
 ```json
 {
   "compilerOptions": {
