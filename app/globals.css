@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-ndoro:   #f6efe2;
+  --color-gora:    #1f1d1c;
+  --color-mwedzi:  #d99749;
+  --color-shavi:   #8c3a26;
+  --color-ruwa:    #4f6b35;
+  --color-mvura:   #2e6f8c;
+  --font-display:  var(--font-fraunces);
+  --font-sans:     var(--font-inter);
+}
+
+:root {
+  --background: var(--color-ndoro);
+  --foreground: var(--color-gora);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection { background: var(--color-mwedzi); color: var(--color-gora); }
