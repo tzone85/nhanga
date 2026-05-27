@@ -395,13 +395,15 @@ git commit -m "test: add vitest + playwright config"
 
 - [ ] **Step 1: Create `eslint.config.mjs`**
 
-```js
-import { FlatCompat } from "@eslint/eslintrc";
+Note: `eslint-config-next@16` ships native ESLint flat config — its `./core-web-vitals` and `./typescript` subpath exports return flat-config arrays directly. The legacy `FlatCompat.extends(...)` shim cannot consume them (it throws on circular plugin refs). Import them directly.
 
-const compat = new FlatCompat({ baseDirectory: import.meta.dirname });
+```js
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
 
 export default [
-  ...compat.extends("next/core-web-vitals", "next/typescript"),
+  ...nextCoreWebVitals,
+  ...nextTypescript,
   { ignores: [".next/**", "node_modules/**", "coverage/**", "playwright-report/**"] }
 ];
 ```
