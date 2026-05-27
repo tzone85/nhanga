@@ -10,3 +10,5 @@ coverage
 .playwright/.cache
 playwright-report
 test-results
+.idea/
+.vscode/
