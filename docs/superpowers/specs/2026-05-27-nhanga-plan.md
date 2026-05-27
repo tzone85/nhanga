@@ -881,10 +881,11 @@ git commit -m "feat(domain): Lesson, QuizAttempt, weekIso, score"
 - Create: `src/domain/quiz.ts`
 - Create: `tests/unit/domain/quiz.test.ts`
 
+Note: `splitMorphemes` compares a learner's proposed segmentation against a canonical morpheme split. Concatenation-equality won't work — both `["ndino","kuda"]` and `["ndi","no","ku","da"]` concatenate to `ndinokuda`. The grader takes two arrays and returns true iff they match element-for-element (case-insensitive).
+
 - [ ] **Step 1: Write failing tests**
 
 ```ts
-// tests/unit/domain/quiz.test.ts
 import { describe, it, expect } from "vitest";
 import { makeCloze, gradeTranslate, splitMorphemes } from "@domain/quiz";
 import type { Line } from "@domain/song";
@@ -919,9 +920,19 @@ describe("gradeTranslate", () => {
 });
 
 describe("splitMorphemes", () => {
-  it("grades exact morpheme split", () => {
-    expect(splitMorphemes("ndinokuda", ["ndi","no","ku","da"])).toBe(true);
-    expect(splitMorphemes("ndinokuda", ["ndino","kuda"])).toBe(false);
+  const canonical = ["ndi", "no", "ku", "da"];
+
+  it("returns true for an exact match against the canonical split", () => {
+    expect(splitMorphemes(["ndi", "no", "ku", "da"], canonical)).toBe(true);
+  });
+  it("returns true case-insensitively", () => {
+    expect(splitMorphemes(["NDI", "No", "KU", "Da"], canonical)).toBe(true);
+  });
+  it("returns false when granularity differs", () => {
+    expect(splitMorphemes(["ndino", "kuda"], canonical)).toBe(false);
+  });
+  it("returns false when length matches but a part is wrong", () => {
+    expect(splitMorphemes(["ndi", "no", "ku", "ra"], canonical)).toBe(false);
   });
 });
 ```
@@ -931,7 +942,6 @@ describe("splitMorphemes", () => {
 - [ ] **Step 3: Implement**
 
 ```ts
-// src/domain/quiz.ts
 import type { Line } from "@domain/song";
 
 export interface ClozeItem {
@@ -976,8 +986,13 @@ export const gradeTranslate = (expected: string, given: string): boolean => {
   return levenshtein(e, g) <= 2;
 };
 
-export const splitMorphemes = (whole: string, parts: readonly string[]): boolean =>
-  parts.join("") === whole.toLowerCase();
+export const splitMorphemes = (
+  given: readonly string[],
+  canonical: readonly string[]
+): boolean => {
+  if (given.length !== canonical.length) return false;
+  return given.every((part, i) => part.toLowerCase() === canonical[i]?.toLowerCase());
+};
 ```
 
 - [ ] **Step 4: Run, expect pass**
