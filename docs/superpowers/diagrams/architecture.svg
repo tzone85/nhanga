@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 620" font-family="Inter, system-ui, sans-serif" font-size="13">
+  <defs>
+    <style>
+      .bg { fill: #f6efe2; }
+      .layer { fill: #ffffff; stroke: #1f1d1c; stroke-width: 1.5; }
+      .layer-presentation { fill: #fef3df; }
+      .layer-application  { fill: #fde6c9; }
+      .layer-ports        { fill: #f1e3c2; }
+      .layer-domain       { fill: #e6d8b3; }
+      .layer-infra        { fill: #fce0d4; }
+      .pill { fill: #ffffff; stroke: #1f1d1c; stroke-width: 1; }
+      .ink  { fill: #1f1d1c; }
+      .muted{ fill: #4a4642; }
+      .accent{ fill: #d99749; }
+      .leaf  { fill: #4f6b35; }
+      .clay  { fill: #8c3a26; }
+      .water { fill: #2e6f8c; }
+      .title { font-weight: 700; font-size: 14px; }
+      .h     { font-weight: 700; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; }
+      .small { font-size: 11px; fill: #4a4642; }
+      .arr   { stroke: #1f1d1c; stroke-width: 1.5; fill: none; }
+      .arr-dim { stroke: #8c8884; stroke-width: 1; fill: none; stroke-dasharray: 4 3; }
+    </style>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1f1d1c"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="880" height="620"/>
+
+  <text x="40" y="40" class="title ink" font-size="20">Nhanga — Layered Architecture</text>
+  <text x="40" y="62" class="small">Dependencies point inward. Domain is pure. Composition root is the only wiring point.</text>
+
+  <!-- Presentation -->
+  <rect x="40" y="90" width="800" height="90" rx="10" class="layer layer-presentation"/>
+  <text x="56" y="112" class="h ink">Presentation · app/ · ui/</text>
+  <g>
+    <rect x="60" y="124" width="150" height="44" rx="8" class="pill"/><text x="135" y="151" text-anchor="middle" class="ink">app/learn</text>
+    <rect x="220" y="124" width="150" height="44" rx="8" class="pill"/><text x="295" y="151" text-anchor="middle" class="ink">app/share</text>
+    <rect x="380" y="124" width="180" height="44" rx="8" class="pill"/><text x="470" y="151" text-anchor="middle" class="ink">app/quiz/[lessonId]</text>
+    <rect x="570" y="124" width="150" height="44" rx="8" class="pill"/><text x="645" y="151" text-anchor="middle" class="ink">app/api/*</text>
+    <rect x="730" y="124" width="100" height="44" rx="8" class="pill"/><text x="780" y="151" text-anchor="middle" class="ink">src/ui</text>
+  </g>
+
+  <!-- Application -->
+  <rect x="40" y="200" width="800" height="92" rx="10" class="layer layer-application"/>
+  <text x="56" y="222" class="h ink">Application · use-cases</text>
+  <g>
+    <rect x="60" y="236" width="170" height="44" rx="8" class="pill"/><text x="145" y="263" text-anchor="middle" class="ink">addSong</text>
+    <rect x="240" y="236" width="170" height="44" rx="8" class="pill"/><text x="325" y="263" text-anchor="middle" class="ink">refineLine</text>
+    <rect x="420" y="236" width="200" height="44" rx="8" class="pill"/><text x="520" y="263" text-anchor="middle" class="ink">pickWeeklySong</text>
+    <rect x="630" y="236" width="200" height="44" rx="8" class="pill"/><text x="730" y="263" text-anchor="middle" class="ink">runQuiz</text>
+  </g>
+
+  <!-- Ports -->
+  <rect x="40" y="312" width="800" height="78" rx="10" class="layer layer-ports"/>
+  <text x="56" y="334" class="h ink">Ports · interfaces (DI seams)</text>
+  <g>
+    <rect x="60" y="346" width="140" height="34" rx="8" class="pill"/><text x="130" y="368" text-anchor="middle" class="ink">Translator</text>
+    <rect x="210" y="346" width="140" height="34" rx="8" class="pill"/><text x="280" y="368" text-anchor="middle" class="ink">LyricsSource</text>
+    <rect x="360" y="346" width="140" height="34" rx="8" class="pill"/><text x="430" y="368" text-anchor="middle" class="ink">VideoAdapter</text>
+    <rect x="510" y="346" width="160" height="34" rx="8" class="pill"/><text x="590" y="368" text-anchor="middle" class="ink">ProgressStore</text>
+    <rect x="680" y="346" width="140" height="34" rx="8" class="pill"/><text x="750" y="368" text-anchor="middle" class="ink">Notifier</text>
+  </g>
+
+  <!-- Domain -->
+  <rect x="40" y="410" width="800" height="78" rx="10" class="layer layer-domain"/>
+  <text x="56" y="432" class="h ink">Domain · pure</text>
+  <g>
+    <rect x="60" y="444" width="170" height="34" rx="8" class="pill"/><text x="145" y="466" text-anchor="middle" class="ink">Song · Line · Gloss</text>
+    <rect x="240" y="444" width="170" height="34" rx="8" class="pill"/><text x="325" y="466" text-anchor="middle" class="ink">Lesson · QuizAttempt</text>
+    <rect x="420" y="444" width="170" height="34" rx="8" class="pill"/><text x="505" y="466" text-anchor="middle" class="ink">Quiz scoring</text>
+    <rect x="600" y="444" width="220" height="34" rx="8" class="pill"/><text x="710" y="466" text-anchor="middle" class="ink">SRS · SM-2 scheduler</text>
+  </g>
+
+  <!-- Infra -->
+  <rect x="40" y="508" width="800" height="82" rx="10" class="layer layer-infra"/>
+  <text x="56" y="530" class="h ink">Infrastructure · adapters</text>
+  <g>
+    <rect x="60" y="544" width="170" height="34" rx="8" class="pill"/><text x="145" y="566" text-anchor="middle" class="clay">translator.aiGateway</text>
+    <rect x="240" y="544" width="170" height="34" rx="8" class="pill"/><text x="325" y="566" text-anchor="middle" class="clay">lyrics.genius+ovh</text>
+    <rect x="420" y="544" width="170" height="34" rx="8" class="pill"/><text x="505" y="566" text-anchor="middle" class="clay">video.youtube</text>
+    <rect x="600" y="544" width="100" height="34" rx="8" class="pill"/><text x="650" y="566" text-anchor="middle" class="clay">store.kv</text>
+    <rect x="710" y="544" width="120" height="34" rx="8" class="pill"/><text x="770" y="566" text-anchor="middle" class="clay">push.webpush</text>
+  </g>
+
+  <!-- Arrows: presentation → application -->
+  <path class="arr" d="M145,168 L145,234" marker-end="url(#ah)"/>
+  <path class="arr" d="M295,168 L325,234" marker-end="url(#ah)"/>
+  <path class="arr" d="M470,168 L520,234" marker-end="url(#ah)"/>
+  <path class="arr" d="M645,168 L730,234" marker-end="url(#ah)"/>
+
+  <!-- Application → ports -->
+  <path class="arr" d="M145,280 L130,344" marker-end="url(#ah)"/>
+  <path class="arr" d="M325,280 L280,344" marker-end="url(#ah)"/>
+  <path class="arr" d="M520,280 L590,344" marker-end="url(#ah)"/>
+  <path class="arr" d="M730,280 L750,344" marker-end="url(#ah)"/>
+
+  <!-- Application → domain (direct) -->
+  <path class="arr-dim" d="M520,280 L505,442"/>
+  <path class="arr-dim" d="M730,280 L710,442"/>
+
+  <!-- Infra → ports (implements, reversed arrow style) -->
+  <path class="arr" d="M145,544 L130,382" marker-end="url(#ah)"/>
+  <path class="arr" d="M325,544 L280,382" marker-end="url(#ah)"/>
+  <path class="arr" d="M505,544 L430,382" marker-end="url(#ah)"/>
+  <path class="arr" d="M650,544 L590,382" marker-end="url(#ah)"/>
+  <path class="arr" d="M770,544 L750,382" marker-end="url(#ah)"/>
+
+  <!-- Legend -->
+  <g transform="translate(40,598)">
+    <line x1="0" y1="0" x2="22" y2="0" class="arr" marker-end="url(#ah)"/>
+    <text x="28" y="4" class="small ink">depends on</text>
+    <line x1="120" y1="0" x2="142" y2="0" class="arr-dim"/>
+    <text x="148" y="4" class="small ink">uses pure domain</text>
+  </g>
+</svg>

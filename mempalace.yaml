@@ -1,0 +1,28 @@
+wing: nhanga
+rooms:
+  - name: domain
+    patterns: ["src/domain/**"]
+  - name: application
+    patterns: ["src/application/**"]
+  - name: ports
+    patterns: ["src/ports/**"]
+  - name: infra
+    patterns: ["src/infra/**"]
+  - name: ui
+    patterns: ["src/ui/**", "app/**"]
+  - name: api
+    patterns: ["app/api/**"]
+  - name: share-target
+    patterns: ["app/share/**", "public/manifest.webmanifest"]
+  - name: quiz
+    patterns: ["app/quiz/**", "src/domain/quiz.ts", "src/domain/srs.ts", "src/application/runQuiz.ts"]
+  - name: weekly-rotation
+    patterns: ["src/application/pickWeeklySong.ts", "vercel.ts"]
+  - name: pwa
+    patterns: ["public/sw.js", "public/manifest.webmanifest", "public/icons/**"]
+  - name: testing
+    patterns: ["tests/**", "vitest.config.ts", "playwright.config.ts"]
+  - name: ci
+    patterns: [".github/**"]
+  - name: docs
+    patterns: ["docs/**", "README.md", "AGENTS.md", "CLAUDE.md"]
