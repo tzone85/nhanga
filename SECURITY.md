@@ -36,7 +36,14 @@ Out of scope:
 ## Known posture
 
 - All API responses include an `x-request-id` to aid investigation.
-- `CRON_SECRET` is compared in constant time.
+- `CRON_SECRET` is compared in constant time; rejected if shorter than 16 bytes.
 - POST endpoints are rate-limited per IP via Upstash.
 - Strict CSP, HSTS, frame-ancestors `'none'`, and other headers applied site-wide.
 - Only YouTube hosts are accepted for share-target / ingestion URLs.
+- Push subscription endpoints are allowlisted against known web-push services (Mozilla autopush, FCM, Apple, Windows Notify) over HTTPS. SSRF via `webpush.sendNotification` is mitigated at write time.
+
+## Known gaps (tracked)
+
+- **No user accounts.** `POST /api/push/subscriptions` is anonymous; rate limiting is the only barrier between an attacker and the broadcast set. Auth (likely Sign in with Vercel) is the next planned addition.
+- **No subscription revocation endpoint.** Stale or expired endpoints linger until `web-push` returns 410 Gone; we don't yet remove them on failure.
+- **CI E2E does not hit a real Upstash.** Share-target and Sunday-quiz Playwright specs are skipped without Upstash creds; integration of fixture state into CI is a follow-up.

@@ -14,3 +14,7 @@ What's protected, by what, and why.
 | Push subscriptions | Zod-validated; VAPID-signed delivery | `app/api/push/subscriptions/route.ts`, `src/infra/push.webpush.ts` |
 
 See [[Sunday Pick]], [[Share Target]], [[Push Notifications]], [[Rate Limiting]] for the operational view.
+
+## Push SSRF mitigation
+
+`webpush.sendNotification(sub, payload)` fetches `sub.endpoint` server-side on every Sunday cron. A stored endpoint pointed at `http://169.254.169.254/...` or any internal host would turn the broadcast into an SSRF oracle. `isAllowedPushEndpoint` rejects everything outside the known web-push service hosts (Mozilla autopush, FCM, Apple, Windows Notify) at write time. Suffix-bypass attempts like `fcm.googleapis.com.evil.com` are rejected by exact-host or `.suffix` match.

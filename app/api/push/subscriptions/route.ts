@@ -7,8 +7,8 @@ import {
 } from "@/src/composition";
 import { newId } from "@domain/ids";
 import { apiError, handleUnexpected } from "@infra/apiError";
-import { clientIpFromHeaders } from "@infra/rateLimit";
-import { fixedWindowRateLimit } from "@infra/rateLimit";
+import { clientIpFromHeaders, fixedWindowRateLimit } from "@infra/rateLimit";
+import { isAllowedPushEndpoint } from "@infra/urlAllowlist";
 
 const SubSchema = z.object({
   endpoint: z.string().url(),
@@ -33,6 +33,13 @@ export async function POST(req: Request) {
       return apiError("INVALID_INPUT", "invalid input", 400, {
         issues: parsed.error.flatten(),
       });
+    }
+    if (!isAllowedPushEndpoint(parsed.data.endpoint)) {
+      return apiError(
+        "URL_NOT_ALLOWED",
+        "unsupported push endpoint",
+        400,
+      );
     }
     const id = newId();
     await redis.set(subscriptionKey(id), parsed.data);
