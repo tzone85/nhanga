@@ -1,13 +1,18 @@
 import { NextResponse } from "next/server";
 import { compose } from "@/src/composition";
 import { sundayPick } from "@application/sundayPick";
+import { isAuthorisedCron } from "@infra/auth.cron";
+import { apiError, handleUnexpected } from "@infra/apiError";
 
 export async function GET(req: Request) {
-  const auth = req.headers.get("authorization");
-  if (auth !== `Bearer ${process.env.CRON_SECRET}`) {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+  if (!isAuthorisedCron(req.headers.get("authorization"), process.env.CRON_SECRET)) {
+    return apiError("UNAUTHORIZED", "unauthorized", 401);
   }
-  const deps = compose();
-  const lesson = await sundayPick(deps);
-  return NextResponse.json({ data: lesson });
+  try {
+    const deps = compose();
+    const lesson = await sundayPick(deps);
+    return NextResponse.json({ data: lesson });
+  } catch (err) {
+    return handleUnexpected(err, "cron.sunday-pick");
+  }
 }

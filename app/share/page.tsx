@@ -1,20 +1,38 @@
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { compose } from "@/src/composition";
+import { addSong } from "@application/addSong";
+import { isAllowedYouTubeUrl } from "@infra/urlAllowlist";
 
-export default async function SharePage({ searchParams }: { searchParams: Promise<{ url?: string; text?: string }> }) {
-  const { url, text } = await searchParams;
-  const href = url ?? text;
-  if (!href) return <main className="p-6">No URL shared.</main>;
+const extractUrl = (s: string): string | null => {
+  const m = s.match(/https?:\/\/\S+/);
+  return m?.[0] ?? null;
+};
 
-  const h = await headers();
-  const origin = `${h.get("x-forwarded-proto") ?? "https"}://${h.get("host")}`;
-  const res = await fetch(`${origin}/api/songs`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify({ url: href }),
-    cache: "no-store"
-  });
-  if (!res.ok) return <main className="p-6">Could not ingest. Try /add.</main>;
-  const { data } = await res.json() as { data: { id: string } };
-  redirect(`/learn/${data.id}`);
+export default async function SharePage({
+  searchParams,
+}: {
+  searchParams: Promise<{ url?: string; text?: string; title?: string }>;
+}) {
+  const { url, text, title } = await searchParams;
+  const candidate = url ?? (text ? extractUrl(text) : null);
+  if (!candidate || !isAllowedYouTubeUrl(candidate)) {
+    return (
+      <main className="p-6">
+        <h1 className="font-[family-name:var(--font-fraunces)] text-2xl mb-2">
+          Can&apos;t use this share
+        </h1>
+        <p className="opacity-70">Only YouTube links are supported.</p>
+      </main>
+    );
+  }
+
+  const deps = compose();
+  const song = await addSong(
+    {
+      url: candidate,
+      ...(title ? { titleHint: title } : {}),
+    },
+    deps,
+  );
+  redirect(`/learn/${song.id}`);
 }

@@ -11,6 +11,10 @@ import {
   makeWebPushNotifier,
   type PushSubscriptionLike,
 } from "@infra/push.webpush";
+import { fixedWindowRateLimit } from "@infra/rateLimit";
+
+export const subscriptionsKey = "push:subscriptions";
+export const subscriptionKey = (id: string) => `push:sub:${id}`;
 
 const requireEnv = (name: string): string => {
   const v = process.env[name];
@@ -40,13 +44,14 @@ export const compose = () => {
     },
   });
 
-  const subscriptionsIndex = "push:subscriptions";
   const getSubscriptions = async (): Promise<
     readonly PushSubscriptionLike[]
   > => {
-    const ids = await getRedis().smembers(subscriptionsIndex);
+    const ids = await getRedis().smembers(subscriptionsKey);
     const subs = await Promise.all(
-      ids.map((id) => getRedis().get<PushSubscriptionLike>(`push:sub:${id}`)),
+      ids.map((id) =>
+        getRedis().get<PushSubscriptionLike>(subscriptionKey(id)),
+      ),
     );
     return subs.filter((s): s is PushSubscriptionLike => s !== null);
   };
@@ -66,6 +71,13 @@ export const compose = () => {
   };
   const notifier = makeWebPushNotifier({ getSubscriptions, sendNotification });
 
+  const limit = Number(process.env.RATE_LIMIT_PER_MINUTE ?? 20);
+  const rateLimit = fixedWindowRateLimit({
+    redis: getRedis(),
+    limit: Number.isFinite(limit) && limit > 0 ? limit : 20,
+    windowSec: 60,
+  });
+
   return {
     store,
     translator,
@@ -74,5 +86,8 @@ export const compose = () => {
     notifier,
     clock: systemClock,
     idGen: newId,
+    rateLimit,
   };
 };
+
+export const getRedisForRuntime = getRedis;
