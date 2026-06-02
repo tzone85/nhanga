@@ -1,6 +1,7 @@
 import { Redis } from "@upstash/redis";
 import webpush from "web-push";
 import { generateText } from "ai";
+import { google } from "@ai-sdk/google";
 import { newId } from "@domain/ids";
 import { systemClock } from "@infra/clock.system";
 import { makeKvStore } from "@infra/store.kv";
@@ -33,8 +34,10 @@ const getRedis = (): Redis => {
 
 export const compose = () => {
   const store = makeKvStore(getRedis());
+  const modelId = process.env.AI_TRANSLATOR_MODEL ?? "gemini-2.0-flash";
+  const model = google(modelId);
   const translator = makeAiGatewayTranslator({
-    generateText: async ({ model, prompt, temperature }) => {
+    generateText: async ({ prompt, temperature }) => {
       const r = await generateText({
         model,
         prompt,
@@ -42,6 +45,7 @@ export const compose = () => {
       });
       return { text: r.text };
     },
+    model,
   });
 
   const getSubscriptions = async (): Promise<

@@ -21,7 +21,7 @@ const responseSchema = z.object({
 
 export interface GenerateText {
   (args: {
-    model: string;
+    model: string | { modelId: string };
     prompt: string;
     temperature?: number;
   }): Promise<{ text: string }>;
@@ -44,12 +44,12 @@ ${shona}
 
 export const makeAiGatewayTranslator = (deps: {
   generateText: GenerateText;
-  model?: string;
+  model?: string | { modelId: string };
 }): Translator => ({
   async draft(shonaLyrics: string): Promise<TranslationDraft> {
     if (!shonaLyrics.trim()) return { lines: [] };
     const { text } = await deps.generateText({
-      model: deps.model ?? "anthropic/claude-sonnet-4-6",
+      model: deps.model ?? "gemini-2.0-flash",
       prompt: PROMPT(shonaLyrics),
       temperature: 0.2,
     });

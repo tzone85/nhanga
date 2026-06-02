@@ -11,6 +11,7 @@ All notable changes to Nhanga are recorded here. Format based on Keep a Changelo
 - **Paste-lyrics fallback.** When automatic lyrics fetching fails, the song page now shows a paste form so users can add Shona lyrics manually. New use case `addLyrics`, API route `PUT /api/songs/[id]/lyrics`, and empty-state UI in `SongEditor`.
 
 ### Changed
+- **Translator switched to Google Gemini.** Replaced Vercel AI Gateway (Anthropic) with `@ai-sdk/google` using `gemini-2.0-flash`. Free tier, no credit card required. Set `GOOGLE_GENERATIVE_AI_API_KEY` in `.env.local`.
 - **Home page onboarding.** Replaced the blank landing page with a "How it works" explainer and navigation links to "Add a song" and "Browse library" so new users can discover the app flow.
 
 ### Security
