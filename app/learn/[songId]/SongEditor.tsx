@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import type { Song } from "@domain/song";
 import { LineEditor } from "@ui/components/LineEditor";
 import { Button } from "@ui/components/Button";
@@ -23,11 +23,13 @@ const LyricsPasteForm = ({
   songId: string;
   onDone: (song: Song) => void;
 }) => {
-  const [lyrics, setLyrics] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  const submit = async () => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const lyrics = (formData.get("lyrics") as string | null) ?? "";
     if (!lyrics.trim()) return;
     setBusy(true);
     setError("");
@@ -46,7 +48,7 @@ const LyricsPasteForm = ({
   };
 
   return (
-    <section className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4">
       <div className="p-4 rounded-lg bg-[var(--color-mwedzi)]/10">
         <p className="font-medium text-[var(--color-shavi)]">No lyrics yet</p>
         <p className="text-sm opacity-70 mt-1">
@@ -55,17 +57,17 @@ const LyricsPasteForm = ({
         </p>
       </div>
       <textarea
+        name="lyrics"
         className="w-full bg-transparent border border-[var(--color-gora)]/30 rounded-lg p-3 focus:outline-none focus:border-[var(--color-mwedzi)] min-h-[200px]"
         placeholder={"Type or paste Shona lyrics here\u2026"}
-        value={lyrics}
-        onChange={(e) => setLyrics(e.target.value)}
+        required
         disabled={busy}
       />
       {error && <p className="text-red-600 text-sm">{error}</p>}
-      <Button onClick={submit} disabled={busy || !lyrics.trim()}>
+      <Button type="submit" disabled={busy}>
         {busy ? "Translating\u2026" : "Add lyrics"}
       </Button>
-    </section>
+    </form>
   );
 };
 
@@ -103,11 +105,12 @@ export const SongEditor = ({ song: initial }: { song: Song }) => {
             className="w-full aspect-video mt-4 rounded-lg"
             src={`https://www.youtube.com/embed/${ytId}`}
             allow="encrypted-media"
+            loading="lazy"
             title={`${song.title} by ${song.artist}`}
           />
         )}
       </header>
-      {song.lines.length === 0 ? (
+      {(song.lines?.length ?? 0) === 0 ? (
         <LyricsPasteForm songId={song.id} onDone={setSong} />
       ) : (
         song.lines.map((l) => (
