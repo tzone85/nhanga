@@ -50,13 +50,13 @@ const LyricsPasteForm = ({
       <div className="p-4 rounded-lg bg-[var(--color-mwedzi)]/10">
         <p className="font-medium text-[var(--color-shavi)]">No lyrics yet</p>
         <p className="text-sm opacity-70 mt-1">
-          Lyrics couldn&apos;t be found automatically. Paste the Shona lyrics
-          below and they&apos;ll be translated line by line.
+          Lyrics couldn&apos;t be found automatically. Type or paste the Shona
+          lyrics below and they&apos;ll be translated line by line.
         </p>
       </div>
       <textarea
         className="w-full bg-transparent border border-[var(--color-gora)]/30 rounded-lg p-3 focus:outline-none focus:border-[var(--color-mwedzi)] min-h-[200px]"
-        placeholder={"Paste Shona lyrics here\u2026"}
+        placeholder={"Type or paste Shona lyrics here\u2026"}
         value={lyrics}
         onChange={(e) => setLyrics(e.target.value)}
         disabled={busy}
