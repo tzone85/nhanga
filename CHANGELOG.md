@@ -7,6 +7,9 @@ All notable changes to Nhanga are recorded here. Format based on Keep a Changelo
 ### Fixed
 - **CSP `eval()` error in development.** Added `'unsafe-eval'` to `script-src` only when `NODE_ENV === "development"` so React 19 debugging features work under Turbopack. Production CSP is unchanged.
 
+### Added
+- **Paste-lyrics fallback.** When automatic lyrics fetching fails, the song page now shows a paste form so users can add Shona lyrics manually. New use case `addLyrics`, API route `PUT /api/songs/[id]/lyrics`, and empty-state UI in `SongEditor`.
+
 ### Changed
 - **Home page onboarding.** Replaced the blank landing page with a "How it works" explainer and navigation links to "Add a song" and "Browse library" so new users can discover the app flow.
 
