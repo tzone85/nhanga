@@ -4,6 +4,12 @@ All notable changes to Nhanga are recorded here. Format based on Keep a Changelo
 
 ## [Unreleased]
 
+### Fixed
+- **CSP `eval()` error in development.** Added `'unsafe-eval'` to `script-src` only when `NODE_ENV === "development"` so React 19 debugging features work under Turbopack. Production CSP is unchanged.
+
+### Changed
+- **Home page onboarding.** Replaced the blank landing page with a "How it works" explainer and navigation links to "Add a song" and "Browse library" so new users can discover the app flow.
+
 ### Security
 - **Push subscription SSRF hardening.** `POST /api/push/subscriptions` now allowlists `endpoint` hosts against known web-push services (Mozilla autopush, FCM, Apple, Windows Notify) over HTTPS before persisting. Without this, a stored endpoint pointed at `http://169.254.169.254/...` (or any internal host) would be re-fetched by `webpush.sendNotification` on every Sunday cron — turning the push fan-out into a weekly SSRF oracle.
 - Suffix-bypass attempts (e.g. `fcm.googleapis.com.evil.com`) are rejected by exact-host or `.suffix` match, not naive `endsWith`.
