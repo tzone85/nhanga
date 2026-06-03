@@ -34,7 +34,7 @@ const getRedis = (): Redis => {
 
 export const compose = () => {
   const store = makeKvStore(getRedis());
-  const modelId = process.env.AI_TRANSLATOR_MODEL ?? "gemini-2.0-flash";
+  const modelId = process.env.AI_TRANSLATOR_MODEL ?? "gemini-2.5-flash-lite";
   const model = google(modelId);
   const translator = makeAiGatewayTranslator({
     generateText: async ({ prompt, temperature }) => {

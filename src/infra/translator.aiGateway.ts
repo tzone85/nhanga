@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { Translator, TranslationDraft } from "@ports/translator";
+import { extractJsonObject } from "./extractJson";
 
 const responseSchema = z.object({
   lines: z.array(
@@ -49,13 +50,17 @@ export const makeAiGatewayTranslator = (deps: {
   async draft(shonaLyrics: string): Promise<TranslationDraft> {
     if (!shonaLyrics.trim()) return { lines: [] };
     const { text } = await deps.generateText({
-      model: deps.model ?? "gemini-2.0-flash",
+      model: deps.model ?? "gemini-2.5-flash-lite",
       prompt: PROMPT(shonaLyrics),
       temperature: 0.2,
     });
+    const jsonBody = extractJsonObject(text);
+    if (jsonBody === null) {
+      throw new Error("Invalid translator output: no JSON object found");
+    }
     let parsed: unknown;
     try {
-      parsed = JSON.parse(text);
+      parsed = JSON.parse(jsonBody);
     } catch {
       throw new Error("Invalid translator output: not JSON");
     }
