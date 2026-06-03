@@ -4,36 +4,28 @@ All notable changes to Nhanga are recorded here. Format based on Keep a Changelo
 
 ## [Unreleased]
 
-### Fixed
-- **CSP `eval()` error in development.** Added `'unsafe-eval'` to `script-src` only when `NODE_ENV === "development"` so React 19 debugging features work under Turbopack. Production CSP is unchanged.
+### Changed
+- **Translator failures are no longer fatal.** `addSong` and `addLyrics` now catch translator errors (missing key, quota, network) and persist the song with Shona-only lines using `splitShonaLines(raw)`. The user can fill in English manually via the existing `LineEditor`. Routes return `{ data, translated, reason? }` so the UI can decide how to react.
+- **`/add` and `SongEditor` surface translation failures.** A dismissible amber banner explains why translation didn't run and tells the user to fill in English by hand. Generic "Something went wrong" replaced with the actual API error message + `requestId`.
+- **`LineEditor`** now has a `placeholder="English translation"` so an empty English field reads as an empty input, not a missing one.
 
 ### Added
-- **Paste-lyrics fallback.** When automatic lyrics fetching fails, the song page now shows a paste form so users can add Shona lyrics manually. New use case `addLyrics`, API route `PUT /api/songs/[id]/lyrics`, and empty-state UI in `SongEditor`.
-
-### Changed
-- **Translator switched to Google Gemini.** Replaced Vercel AI Gateway (Anthropic) with `@ai-sdk/google` using `gemini-2.0-flash`. Free tier, no credit card required. Set `GOOGLE_GENERATIVE_AI_API_KEY` in `.env.local`.
-- **Home page onboarding.** Replaced the blank landing page with a "How it works" explainer and navigation links to "Add a song" and "Browse library" so new users can discover the app flow.
+- `splitShonaLines(raw)` pure helper in `src/domain/song.ts`. Splits on `\n` / `\r\n`, trims, drops empties.
+- `AddLyricsResult` / `AddSongResult` types exposing `{ song, translated, reason? }`.
+- `SongEditor` props: `initialTranslated`, `initialReason` (so SSR can pre-seed the banner if the user just landed from `/share` after a failed translation — wired in a follow-up).
+- New tests: `splitShonaLines`, `addLyrics` fallback path, `addSong` fallback path, `SongEditor` banner behaviour. Suite now 107 tests, 99.68% statement coverage.
 
 ### Security
-- **Push subscription SSRF hardening.** `POST /api/push/subscriptions` now allowlists `endpoint` hosts against known web-push services (Mozilla autopush, FCM, Apple, Windows Notify) over HTTPS before persisting. Without this, a stored endpoint pointed at `http://169.254.169.254/...` (or any internal host) would be re-fetched by `webpush.sendNotification` on every Sunday cron — turning the push fan-out into a weekly SSRF oracle.
-- Suffix-bypass attempts (e.g. `fcm.googleapis.com.evil.com`) are rejected by exact-host or `.suffix` match, not naive `endsWith`.
-- **Known gap:** the subscription endpoint is still unauthenticated. Today only rate-limiting (5/min/IP) stands between an anonymous attacker and the broadcast set. Auth is tracked for the next iteration; see `SECURITY.md`.
+- **Push subscription SSRF hardening.** `POST /api/push/subscriptions` allowlists `endpoint` hosts against known web-push services (Mozilla autopush, FCM, Apple, Windows Notify) over HTTPS before persisting. Suffix-bypass attempts (`fcm.googleapis.com.evil.com`) rejected.
+- **Known gap:** subscription endpoint still unauthenticated; rate limiting (5/min/IP) is the only barrier. Tracked in `SECURITY.md`.
 
-### Added
-- Production hardening: site-wide security headers (CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy).
+### Production hardening (earlier)
+- Site-wide security headers (CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy).
 - Constant-time `CRON_SECRET` comparison (`src/infra/auth.cron.ts`).
 - Per-IP rate limiting on POST endpoints via Upstash (`src/infra/rateLimit.ts`).
 - YouTube host allowlist for share-target / ingestion (`src/infra/urlAllowlist.ts`).
 - Web-push host allowlist for subscription endpoints (`src/infra/urlAllowlist.ts`).
-- Structured JSON logger (`src/infra/logger.ts`) and unified API error responses with `x-request-id` (`src/infra/apiError.ts`).
-- Push subscription endpoint (`/api/push/subscriptions`).
-- Health endpoint (`/api/health`).
+- Structured JSON logger (`src/infra/logger.ts`) and unified API error envelope with `x-request-id` (`src/infra/apiError.ts`).
+- Endpoints: `/api/health`, `/api/push/subscriptions`, `/api/songs/[id]/lyrics`.
 - OSS scaffolding: LICENSE (MIT), CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, CHANGELOG, issue + PR templates, Dependabot.
-- Architecture Decision Records under `docs/adr/`.
-- Operations runbook under `docs/runbook.md`.
-- Obsidian-compatible docs vault under `docs/obsidian/`.
-
-### Changed
-- API routes now use structured error envelopes and never leak internals.
-- `share` page validates URLs against the YouTube allowlist before ingesting.
-- Vitest coverage no longer attempts to run Playwright specs.
+- ADRs (`docs/adr/`), runbook (`docs/runbook.md`), Obsidian vault (`docs/obsidian/`).

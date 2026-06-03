@@ -31,11 +31,44 @@ describe("addLyrics", () => {
       translator,
     });
 
-    expect(result.lines).toHaveLength(1);
-    expect(result.lines[0]?.shona).toBe("Nhasi ndafara");
-    expect(result.lines[0]?.confidence).toBe("draft");
+    expect(result.translated).toBe(true);
+    expect(result.reason).toBeUndefined();
+    expect(result.song.lines).toHaveLength(1);
+    expect(result.song.lines[0]?.shona).toBe("Nhasi ndafara");
+    expect(result.song.lines[0]?.english).toBe("Today I am happy");
+    expect(result.song.lines[0]?.confidence).toBe("draft");
     expect(translator.draft).toHaveBeenCalledWith("Nhasi ndafara");
-    expect(store.upsertSong).toHaveBeenCalledWith(result);
+    expect(store.upsertSong).toHaveBeenCalledWith(result.song);
+  });
+
+  it("falls back to Shona-only lines when the translator throws", async () => {
+    const store = {
+      getSong: vi.fn().mockResolvedValue(baseSong),
+      upsertSong: vi.fn().mockResolvedValue(undefined),
+    };
+    const translator = {
+      draft: vi.fn().mockRejectedValue(new Error("GOOGLE_GENERATIVE_AI_API_KEY missing")),
+    };
+
+    const result = await addLyrics(
+      "s1",
+      "Nhasi ndafara\nMwari anewe\n",
+      {
+        store: store as unknown as ProgressStore,
+        translator,
+      },
+    );
+
+    expect(result.translated).toBe(false);
+    expect(result.reason).toMatch(/GOOGLE_GENERATIVE_AI_API_KEY/);
+    expect(result.song.lines).toHaveLength(2);
+    expect(result.song.lines[0]).toMatchObject({
+      shona: "Nhasi ndafara",
+      english: "",
+      confidence: "draft",
+    });
+    expect(result.song.lines[1]?.shona).toBe("Mwari anewe");
+    expect(store.upsertSong).toHaveBeenCalledOnce();
   });
 
   it("throws if song not found", async () => {

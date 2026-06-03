@@ -27,12 +27,12 @@ export default async function SharePage({
   }
 
   const deps = compose();
-  const song = await addSong(
+  const result = await addSong(
     {
       url: candidate,
       ...(title ? { titleHint: title } : {}),
     },
     deps,
   );
-  redirect(`/learn/${song.id}`);
+  redirect(`/learn/${result.song.id}`);
 }

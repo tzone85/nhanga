@@ -25,11 +25,15 @@ export async function PUT(
       });
     }
     const { store, translator } = compose();
-    const song = await addLyrics(id, parsed.data.shonaLyrics, {
+    const result = await addLyrics(id, parsed.data.shonaLyrics, {
       store,
       translator,
     });
-    return NextResponse.json({ data: song });
+    return NextResponse.json({
+      data: result.song,
+      translated: result.translated,
+      ...(result.reason !== undefined ? { reason: result.reason } : {}),
+    });
   } catch (err) {
     if (err instanceof Error && err.message.includes("already has lines")) {
       return apiError("CONFLICT", "song already has lyrics", 409);

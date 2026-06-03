@@ -55,8 +55,15 @@ export async function POST(req: Request) {
         ? { titleHint: parsed.data.titleHint }
         : {}),
     };
-    const song = await addSong(input, deps);
-    return NextResponse.json({ data: song }, { status: 201 });
+    const result = await addSong(input, deps);
+    return NextResponse.json(
+      {
+        data: result.song,
+        translated: result.translated,
+        ...(result.reason !== undefined ? { reason: result.reason } : {}),
+      },
+      { status: 201 },
+    );
   } catch (err) {
     return handleUnexpected(err, "songs.post");
   }

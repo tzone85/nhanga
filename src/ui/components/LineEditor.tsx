@@ -21,17 +21,30 @@ export const LineEditor = ({ line, onSave }: Props) => {
       <div className="flex gap-2">
         <input
           aria-label={`English for line ${line.index + 1}`}
+          placeholder="English translation"
           className="flex-1 bg-transparent border-b border-[var(--color-gora)]/30 px-1 py-1 focus:outline-none focus:border-[var(--color-mwedzi)]"
           value={val}
-          onChange={e => setVal(e.target.value)}
+          onChange={(e) => setVal(e.target.value)}
         />
         {dirty && (
-          <Button disabled={saving} onClick={async () => { setSaving(true); await onSave(val); setSaving(false); }}>
+          <Button
+            disabled={saving}
+            onClick={async () => {
+              setSaving(true);
+              await onSave(val);
+              setSaving(false);
+            }}
+          >
             {saving ? "Saving…" : "Save"}
           </Button>
         )}
         {!dirty && line.confidence === "refined" && (
-          <span className="text-[var(--color-ruwa)] self-center" aria-label="refined">✓</span>
+          <span
+            className="text-[var(--color-ruwa)] self-center"
+            aria-label="refined"
+          >
+            ✓
+          </span>
         )}
       </div>
     </div>
