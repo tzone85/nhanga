@@ -4,31 +4,16 @@ All notable changes to Nhanga are recorded here. Format based on Keep a Changelo
 
 ## [Unreleased]
 
-### Fixed
-- **Translator output now survives markdown fences.** Gemini frequently wraps JSON in ` ```json ... ``` `; the strict `JSON.parse` rejected every response and the user got "Invalid translator output: not JSON" forever. New `extractJsonObject(raw)` strips fences, finds the first balanced `{...}` object, and parses that. Six unit tests cover fences / plain / prose-wrapped / unbalanced.
-- **Changed default translator model to `gemini-2.5-flash-lite`.** AI Studio keys frequently have a free-tier limit of **0** on `gemini-2.0-flash`, so the previous default failed for most users with the message "Quota exceeded ... limit: 0". `gemini-2.5-flash-lite` works on the free tier and has generous quotas. `.env.example` updated with a note listing safe alternatives.
+### Added
+- **Per-song CSV and Anki TSV export** via `GET /api/songs/[id]/export?format=csv|anki`. Download buttons on each song page.
+- **Library-wide export** via `GET /api/library/export?format=csv|anki`. CSV prepends `title,artist` columns; TSV concatenates all songs with `<title> <artist>` tags for Anki.
+- Pure helpers `toCsv(song)`, `toAnkiTsv(song)`, `exportFilename(song, ext)` in `src/application/exportSong.ts`. RFC 4180 escaping (commas, quotes, newlines). Five unit tests.
 
 ### Changed
-- Translator failures are non-fatal: `addSong` and `addLyrics` persist Shona-only lines so the user can refine English manually via `LineEditor`.
-- `/api/songs` POST and `/api/songs/[id]/lyrics` PUT return `{ data, translated, reason? }` so the UI can react.
-- `SongEditor` shows a dismissible amber banner with the API's `reason` when translation didn't run or any line is missing English.
-- `/add` surfaces the actual API error (with `requestId`) instead of failing silently.
-- `LineEditor` adds `placeholder="English translation"`.
+- **New theme: Sage Garden.** Warm linen background (`#f4f1ea`), deep forest text (`#1c2a22`), sage headings (`#2f5f47`), terracotta accent (`#c97a4f`), moss success (`#4f6b35`). Legacy CSS variable names kept as aliases so existing components compile without per-file edits.
+- **LineEditor no longer truncates long English translations.** Single-line `<input>` replaced with auto-growing `<textarea>` (`rows={1}` + `scrollHeight` resize). Word-wrap on both Shona and English columns.
+- `Button` adds a `secondary` variant (terracotta on linen) and uses semantic color tokens.
+- Library page (`/learn`) header now has "Download all (CSV)" and "All as Anki TSV" actions when songs exist.
 
-### Added
-- `splitShonaLines(raw)` pure helper in `src/domain/song.ts`.
-- `extractJsonObject(raw)` helper in `src/infra/extractJson.ts`.
-- `AddLyricsResult` / `AddSongResult` types exposing `{ song, translated, reason? }`.
-
-### Security
-- Push subscription SSRF hardening: `endpoint` allowlist against known web-push services (Mozilla autopush, FCM, Apple, Windows Notify). Suffix-bypass attempts rejected.
-- Known gap: push subscription endpoint still unauthenticated; rate limiting (5/min/IP) is the only barrier.
-
-### Production hardening (earlier)
-- Site-wide security headers (CSP, HSTS, X-Frame-Options, Referrer-Policy, Permissions-Policy).
-- Constant-time `CRON_SECRET` comparison.
-- Per-IP rate limiting on POST endpoints via Upstash.
-- YouTube host allowlist for share-target / ingestion.
-- Structured JSON logger + unified API error envelope with `x-request-id`.
-- Endpoints: `/api/health`, `/api/push/subscriptions`, `/api/songs/[id]/lyrics`.
-- OSS scaffolding, ADRs, runbook, Obsidian vault.
+### Earlier
+- Translator fallback (Shona-only persistence on failure), markdown-fence-stripping JSON parser, default model `gemini-2.5-flash-lite`, SSRF allowlist on push subscriptions, full prod hardening + OSS scaffolding.

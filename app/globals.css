@@ -1,19 +1,37 @@
 @import "tailwindcss";
 
+/* Sage Garden — calm, professional, no-AI-purple */
 @theme inline {
-  --color-ndoro:   #f6efe2;
-  --color-gora:    #1f1d1c;
-  --color-mwedzi:  #d99749;
-  --color-shavi:   #8c3a26;
-  --color-ruwa:    #4f6b35;
-  --color-mvura:   #2e6f8c;
+  /* Surfaces */
+  --color-background:   #f4f1ea;  /* warm linen */
+  --color-surface:      #ffffff;  /* card / inputs over linen */
+  --color-foreground:   #1c2a22;  /* deep forest text */
+  --color-muted:        #5a6b62;  /* secondary text */
+
+  /* Brand */
+  --color-heading:      #2f5f47;  /* sage green */
+  --color-accent:       #c97a4f;  /* terracotta highlight */
+  --color-success:      #4f6b35;  /* moss (used for refined ✓) */
+  --color-info:         #2e6f8c;  /* slate blue */
+  --color-warning:      #b3863b;  /* amber */
+  --color-danger:       #a8423b;  /* muted brick */
+
+  /* Legacy aliases — keep old class refs compiling.
+     New code should use the semantic names above. */
+  --color-ndoro:   var(--color-background);
+  --color-gora:    var(--color-foreground);
+  --color-shavi:   var(--color-heading);
+  --color-mwedzi:  var(--color-accent);
+  --color-ruwa:    var(--color-success);
+  --color-mvura:   var(--color-info);
+
   --font-display:  var(--font-fraunces);
   --font-sans:     var(--font-inter);
 }
 
 :root {
-  --background: var(--color-ndoro);
-  --foreground: var(--color-gora);
+  --background: var(--color-background);
+  --foreground: var(--color-foreground);
 }
 
 body {
@@ -24,4 +42,4 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-::selection { background: var(--color-mwedzi); color: var(--color-gora); }
+::selection { background: color-mix(in srgb, var(--color-accent) 30%, transparent); color: var(--color-foreground); }

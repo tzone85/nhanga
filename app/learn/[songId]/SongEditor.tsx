@@ -79,8 +79,8 @@ const LyricsPasteForm = ({
         <p className="font-medium text-[var(--color-shavi)]">No lyrics yet</p>
         <p className="text-sm opacity-70 mt-1">
           Lyrics couldn&apos;t be found automatically. Type or paste the Shona
-          lyrics below and they&apos;ll be translated line by line. One line
-          per row.
+          lyrics below and they&apos;ll be translated line by line. One line per
+          row.
         </p>
       </div>
       <textarea
@@ -113,9 +113,13 @@ const TranslationBanner = ({
       <div>
         <p className="font-medium">Translation didn&apos;t run.</p>
         <p className="opacity-80 mt-1">
-          Your lyrics are saved as Shona-only. Fill the English column inline
-          to refine each line.
-          {reason ? <span className="block mt-1 text-xs opacity-70">Reason: {reason}</span> : null}
+          Your lyrics are saved as Shona-only. Fill the English column inline to
+          refine each line.
+          {reason ? (
+            <span className="block mt-1 text-xs opacity-70">
+              Reason: {reason}
+            </span>
+          ) : null}
         </p>
       </div>
       <button
@@ -164,9 +168,7 @@ export const SongEditor = ({
     setSong((s) => ({
       ...s,
       lines: s.lines.map((l, i) =>
-        i === lineIndex
-          ? { ...l, english, confidence: "refined" as const }
-          : l,
+        i === lineIndex ? { ...l, english, confidence: "refined" as const } : l,
       ),
     }));
   };
@@ -176,10 +178,31 @@ export const SongEditor = ({
   return (
     <main className="max-w-3xl mx-auto p-6">
       <header className="mb-6">
-        <h1 className="font-[family-name:var(--font-fraunces)] text-4xl text-[var(--color-shavi)]">
-          {song.title}
-        </h1>
-        <p className="opacity-70">{song.artist}</p>
+        <div className="flex items-start justify-between gap-4 flex-wrap">
+          <div>
+            <h1 className="font-[family-name:var(--font-fraunces)] text-4xl text-[var(--color-heading)]">
+              {song.title}
+            </h1>
+            <p className="opacity-70">{song.artist}</p>
+          </div>
+          {song.lines.length > 0 && (
+            <div className="flex gap-2 text-sm">
+              <a
+                href={`/api/songs/${song.id}/export?format=csv`}
+                className="px-3 py-1.5 rounded-md border border-[var(--color-foreground)]/20 hover:bg-[var(--color-foreground)]/5"
+              >
+                Download CSV
+              </a>
+              <a
+                href={`/api/songs/${song.id}/export?format=anki`}
+                className="px-3 py-1.5 rounded-md border border-[var(--color-foreground)]/20 hover:bg-[var(--color-foreground)]/5"
+                title="Tab-separated file for Anki: File → Import"
+              >
+                Anki TSV
+              </a>
+            </div>
+          )}
+        </div>
         {ytId && (
           <iframe
             className="w-full aspect-video mt-4 rounded-lg"
