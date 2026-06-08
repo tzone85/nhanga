@@ -60,7 +60,6 @@ POST endpoints are rate-limited per IP via `deps.rateLimit(...)` from the compos
 - ADRs: `docs/adr/`
 - Runbook: `docs/runbook.md`
 - Architecture vault: `docs/obsidian/`
-- Specs / diagrams: `docs/superpowers/`
 
 ## Prompt Injection Defenses
 
